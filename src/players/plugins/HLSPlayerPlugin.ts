@@ -4,8 +4,11 @@ import { IPlayer } from '../IPlayer';
 export class HLSPlayerPlugin implements IPlayer {
   private hls: Hls | null = null;
   private video: HTMLVideoElement | null = null;
+  private eventListeners: { [key: string]: ((data?: any) => void)[] } = {};
 
   initialize(container: HTMLElement, options?: any): void {
+    container.innerHTML = '';
+
     const video = document.createElement('video');
     video.controls = true;
     container.appendChild(video);
@@ -14,31 +17,28 @@ export class HLSPlayerPlugin implements IPlayer {
     if (Hls.isSupported()) {
       this.hls = new Hls(options);
       this.hls.attachMedia(video);
-      this.hls.on(Hls.Events.ERROR, (event, data) => {
-        console.error('HLS.js Error:', data);
-      });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = '';
-    } else {
-      console.error('HLS is not supported in this browser.');
+
+      this.hls.on(Hls.Events.MEDIA_ATTACHED, () => this.emitEvent('playing'));
+      this.hls.on(Hls.Events.BUFFER_APPENDING, () => this.emitEvent('buffering'));
+      this.hls.on(Hls.Events.ERROR, (_, data) => this.emitEvent('error', data));
+      this.hls.on(Hls.Events.LEVEL_SWITCHED, (_, data) => this.emitEvent('renditionchange', data));
     }
   }
 
   load(src: string): void {
     if (this.hls && this.video) {
       this.hls.loadSource(src);
+      this.emitEvent('playing');
     } else if (this.video) {
-      if (this.video.canPlayType('application/vnd.apple.mpegurl')) {
-        this.video.src = src;
-        this.video.load();
-      } else {
-        console.error('HLS is not supported in this browser.');
-      }
+      this.video.src = src;
+      this.video.load();
+      this.emitEvent('playing');
     }
   }
 
   play(): void {
     this.video?.play();
+    this.emitEvent('playing');
   }
 
   pause(): void {
@@ -46,13 +46,38 @@ export class HLSPlayerPlugin implements IPlayer {
   }
 
   destroy(): void {
-    if (this.hls) {
-      this.hls.destroy();
-      this.hls = null;
+    this.hls?.destroy();
+    this.hls = null;
+    this.video = null;
+  }
+
+  // QoE Metrics
+  getBitrate(): number {
+    return this.hls?.levels?.[this.hls.currentLevel]?.bitrate || 0;
+  }
+
+  getResolution(): string {
+    if (!this.video) return 'N/A';
+    return `${this.video.videoWidth}x${this.video.videoHeight}`;
+  }
+
+  // Event Handling
+  on(event: string, callback: (data?: any) => void): void {
+    if (!this.eventListeners[event]) {
+      this.eventListeners[event] = [];
     }
-    if (this.video && this.video.parentElement) {
-      this.video.parentElement.removeChild(this.video);
-      this.video = null;
+    this.eventListeners[event].push(callback);
+  }
+
+  off(event: string, callback: (data?: any) => void): void {
+    if (this.eventListeners[event]) {
+      this.eventListeners[event] = this.eventListeners[event].filter(cb => cb !== callback);
+    }
+  }
+
+  private emitEvent(eventType: string, data?: any) {
+    if (this.eventListeners[eventType]) {
+      this.eventListeners[eventType].forEach(callback => callback(data));
     }
   }
 }

@@ -4,4 +4,12 @@ export interface IPlayer {
     play(): void;
     pause(): void;
     destroy(): void;
-}
+  
+    // QoE Metrics
+    getBitrate?(): number;  // Returns current bitrate in Kbps
+    getResolution?(): string; // Returns current resolution as "width x height"
+  
+    // Event Handling
+    on?(event: string, callback: (data?: any) => void): void;
+    off?(event: string, callback: (data?: any) => void): void;
+  }

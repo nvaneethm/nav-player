@@ -1,51 +1,32 @@
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
-import 'videojs-contrib-dash'; 
 import { IPlayer } from '../IPlayer';
-import  VideoJsPlayerOptions  from 'video.js';
 
 export class VideoJSPlugin implements IPlayer {
-    private player: any| null = null;
+  private player: any | null = null;
   private videoElement: HTMLVideoElement | null = null;
+  private eventListeners: { [key: string]: ((data?: any) => void)[] } = {};
 
-  /**
-   * Initialize the Video.js player within the given container.
-   * @param container The HTML element to initialize the player in.
-   * @param options Player-specific options.
-   */
   initialize(container: HTMLElement, options?: any): void {
-    if (!container) {
-      throw new Error('Container element is required to initialize Video.js.');
-    }
-
-    // Clear the container to prevent multiple video elements
     container.innerHTML = '';
 
-    // Create and configure the video element
     const video = document.createElement('video');
     video.className = 'video-js vjs-default-skin';
     video.style.width = '100%';
     video.style.position = 'relative'
     video.style.height = '100%';
-    video.setAttribute('controls', ''); // Ensure controls are enabled
+    video.setAttribute('controls', '');
     container.appendChild(video);
     this.videoElement = video;
 
-    // Initialize Video.js on the video element
     this.player = videojs(video, options);
 
-    // Optional: Add event listeners for debugging
-    this.player.on('error', () => {
-      const error = this.player?.error();
-      console.error('Video.js Error:', error);
-    });
+    this.player.on('playing', () => this.emitEvent('playing'));
+    this.player.on('waiting', () => this.emitEvent('buffering'));
+    this.player.on('error', () => this.emitEvent('error', this.player?.error()));
+    this.player.on('resolutionchange', () => this.emitEvent('renditionchange'));
   }
 
-
-  /**
-   * Load the video source into the player.
-   * @param src The video manifest URL.
-   */
   load(src: string): void {
     if (this.player && this.videoElement) {
       // Determine the source type based on the file extension
@@ -66,28 +47,20 @@ export class VideoJSPlugin implements IPlayer {
     } else {
       console.error('Video.js Player is not initialized. Call initialize() before load().');
     }
+    this.emitEvent('playing');
   }
 
-
-  /**
-   * Play the video.
-   */
   play(): void {
     this.player?.play().catch((error:any) => {
       console.error('Error attempting to play the video:', error);
     });
+    this.emitEvent('playing');
   }
 
-  /**
-   * Pause the video.
-   */
   pause(): void {
     this.player?.pause();
   }
 
-  /**
-   * Destroy the player instance and clean up resources.
-   */
   destroy(): void {
     if (this.player) {
       this.player.dispose();
@@ -95,7 +68,34 @@ export class VideoJSPlugin implements IPlayer {
     }
     if (this.videoElement && this.videoElement.parentElement) {
       this.videoElement.parentElement.removeChild(this.videoElement);
-      this.videoElement = null;
+      this.videoElement = null;}
+  }
+
+  getBitrate(): number {
+    return this.player?.videoTracks?.[0]?.bitrate || 0;
+  }
+
+  getResolution(): string {
+    if (!this.videoElement) return 'N/A';
+    return `${this.videoElement.videoWidth}x${this.videoElement.videoHeight}`;
+  }
+
+  on(event: string, callback: (data?: any) => void): void {
+    if (!this.eventListeners[event]) {
+      this.eventListeners[event] = [];
+    }
+    this.eventListeners[event].push(callback);
+  }
+
+  off(event: string, callback: (data?: any) => void): void {
+    if (this.eventListeners[event]) {
+      this.eventListeners[event] = this.eventListeners[event].filter(cb => cb !== callback);
+    }
+  }
+
+  private emitEvent(eventType: string, data?: any) {
+    if (this.eventListeners[eventType]) {
+      this.eventListeners[eventType].forEach(callback => callback(data));
     }
   }
 }

@@ -11,3 +11,56 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.videoContainer {
+  width: 640px; /* Fixed width */
+  height: 360px; /* Fixed height */
+  position: relative;
+  background-color: black; /* Ensure visibility */
+  overflow: hidden;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+}
+
+.qoeContainer {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  max-width: 400px;
+  font-family: Arial, sans-serif;
+}
+
+h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.metrics p {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.events {
+  max-height: 100px;
+  overflow-y: auto;
+  padding: 5px;
+  font-size: 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  list-style: none;
+}
+
+.events li {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.events li:last-child {
+  border-bottom: none;
+}
