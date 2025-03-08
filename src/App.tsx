@@ -4,6 +4,7 @@ import VideoURLInput from "./components/VideoURLInput"; // Import the new compon
 import PluginManager from "./players/PluginManager";
 import { SHAKA_PLAYER, VIDEO_JS } from "./players/PlayerFactory";
 import ErrorBoundary from "./components/ErrorBoundary";
+import PlayerSelectorAccordion from "./components/PlayerSelectorAccordion";
 
 const SAMPLE_VIDEO = // 'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd';
   "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8";
@@ -28,24 +29,23 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <h1>Nav ABR Video Player</h1>
-
-      <div>
-        <label htmlFor="player-select">🎥 Select Player: </label>
-        <select
-          id="player-select"
-          value={selectedPlugin}
-          onChange={(e) => setSelectedPlugin(e.target.value)}
-        >
-          {availablePlugins.map((plugin) => (
-            <option key={plugin} value={plugin}>
-              {plugin.toUpperCase()}
-            </option>
-          ))}
-        </select>
-      </div>
+      <h1
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        Nav Stream/Player Tester
+      </h1>
 
       <div className={"dashBoard"}>
+        <PlayerSelectorAccordion
+          selectedPlayer={selectedPlugin}
+          availablePlayers={availablePlugins}
+          onSelect={setSelectedPlugin}
+        ></PlayerSelectorAccordion>
+
         <ErrorBoundary>
           <VideoPlayer
             src={videoSrc}
@@ -55,6 +55,7 @@ const App: React.FC = () => {
           />
         </ErrorBoundary>
       </div>
+
       <VideoURLInput defaultURL={SAMPLE_VIDEO} onLoad={handleLoadVideo} />
     </div>
   );
