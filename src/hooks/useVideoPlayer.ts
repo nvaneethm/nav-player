@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import PluginManager from "../players/PluginManager";
 import { IPlayer } from "../players/IPlayer";
 
-const useVideoPlayer = (pluginName: string, src: string) => {
+const useVideoPlayer = (pluginName: string, src: string, drmType: string | null | undefined, licenseUrl: string | null | undefined) => {
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const [playerInstance, setPlayerInstance] = useState<IPlayer | null>(null);
 
@@ -14,8 +14,9 @@ const useVideoPlayer = (pluginName: string, src: string) => {
     }
 
     if (playerContainerRef.current) {
-      plugin.initialize(playerContainerRef.current, {});
-      plugin.load(src);
+      const drmConfig = drmType && licenseUrl ? { drmType, licenseUrl } : null;
+      plugin.initialize(playerContainerRef.current, drmConfig ? { drm: { [drmConfig.drmType]: { serverURL: drmConfig.licenseUrl } } } : {});
+      plugin.load(src, drmConfig);
       setPlayerInstance(plugin);
     }
 
@@ -25,7 +26,7 @@ const useVideoPlayer = (pluginName: string, src: string) => {
       }
       setPlayerInstance(null);
     };
-  }, [pluginName, src]);
+  }, [pluginName, src, drmType, licenseUrl]);
 
   return { playerContainerRef, playerInstance };
 };

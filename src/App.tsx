@@ -10,7 +10,19 @@ const SAMPLE_VIDEO = // 'https://storage.googleapis.com/shaka-demo-assets/angel-
 
 const App: React.FC = () => {
   const [selectedPlugin, setSelectedPlugin] = useState<string>(VIDEO_JS);
-  const [videoSrc, setVideoSrc] = useState<string>(SAMPLE_VIDEO); // State for video URL
+  const [videoSrc, setVideoSrc] = useState<string>(SAMPLE_VIDEO);
+  const [drmType, setDrmType] = useState<string | null>(null);
+  const [licenseUrl, setLicenseUrl] = useState<string | null>(null);
+
+  const handleLoadVideo = (
+    url: string,
+    drm: string | null,
+    license: string | null
+  ) => {
+    setVideoSrc(url);
+    setDrmType(drm);
+    setLicenseUrl(license);
+  };
 
   const availablePlugins = PluginManager.getAvailablePlugins();
 
@@ -35,10 +47,15 @@ const App: React.FC = () => {
 
       <div className={"dashBoard"}>
         <ErrorBoundary>
-          <VideoPlayer src={videoSrc} pluginName={selectedPlugin} />
+          <VideoPlayer
+            src={videoSrc}
+            pluginName={selectedPlugin}
+            drmType={drmType}
+            licenseUrl={licenseUrl}
+          />
         </ErrorBoundary>
       </div>
-      <VideoURLInput defaultURL={SAMPLE_VIDEO} onLoad={setVideoSrc} />
+      <VideoURLInput defaultURL={SAMPLE_VIDEO} onLoad={handleLoadVideo} />
     </div>
   );
 };
