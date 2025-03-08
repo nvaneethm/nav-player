@@ -10,16 +10,18 @@ export interface PlayerMetrics {
 }
 
 const usePlayerMetrics = (playerInstance: IPlayer | null) => {
-  const [metrics, setMetrics] = useState<PlayerMetrics>({
+  const initalMatrix = {
     buffering: false,
     currentBitrate: 0,
     resolution: 'N/A',
     renditionSwitches: 0,
     events: [],
-  });
+  }
+  const [metrics, setMetrics] = useState<PlayerMetrics>(initalMatrix);
 
   useEffect(() => {
     if (!playerInstance) return;
+    setMetrics(initalMatrix)
 
     const updateMetrics = () => {
       setMetrics((prev) => ({
