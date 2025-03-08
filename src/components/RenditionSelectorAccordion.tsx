@@ -27,7 +27,6 @@ const RenditionSelectorAccordion: React.FC<RenditionSelectorAccordionProps> = ({
 
     fetchRenditions(); // Fetch initially
 
-    // ✅ Listen for metadata load event in Video.js
     playerInstance.on?.("loadedmetadata", fetchRenditions);
     playerInstance.on?.("renditionchange", fetchRenditions); // Handle dynamic changes
 
