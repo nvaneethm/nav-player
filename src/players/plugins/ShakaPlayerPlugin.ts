@@ -74,6 +74,42 @@ export class ShakaPlayerPlugin implements IPlayer {
       .catch((error) => this.emitEvent("error", error));
   }
 
+  getAvailableRenditions(): { resolution: string; bitrate: number }[] {
+    if (!this.player) return [];
+
+    const variantTracks = this.player.getVariantTracks();
+
+    return variantTracks
+      .filter((track) => track.width && track.height) // Filter only valid video tracks
+      .map((track) => ({
+        resolution: `${track.width}x${track.height}`,
+        bitrate: Math.round(track.bandwidth / 1000), // Convert to Kbps
+      }))
+      .sort((a, b) => a.bitrate - b.bitrate); // Sort by increasing bitrate
+  }
+
+  setRendition(resolution: string): void {
+    if (!this.player) return;
+
+    const tracks = this.player.getVariantTracks();
+    const selectedTrack = tracks.find(
+      (track) => `${track.width}x${track.height}` === resolution
+    );
+
+    if (selectedTrack) {
+      this.player.selectVariantTrack(selectedTrack, true);
+      this.player.configure({ abr: { enabled: false } }); // Disable ABR
+      console.log(`Switched to ${resolution}`);
+    }
+  }
+
+  setAdaptiveBitrate(enable: boolean): void {
+    if (this.player) {
+      this.player.configure({ abr: { enabled: enable } });
+      console.log(`ABR ${enable ? "enabled" : "disabled"}`);
+    }
+  }
+
   play(): void {
     this.videoElement?.play();
     this.emitEvent("playing");

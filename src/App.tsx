@@ -4,8 +4,6 @@ import VideoURLInput from "./components/VideoURLInput"; // Import the new compon
 import PluginManager from "./players/PluginManager";
 import { SHAKA_PLAYER, VIDEO_JS } from "./players/PlayerFactory";
 import ErrorBoundary from "./components/ErrorBoundary";
-import DeviceCapabilitiesAccordion from "./components/DeviceCapabilitiesAccordion";
-import StreamDetailsAccordion from "./components/StreamDetailsAccordion";
 
 const SAMPLE_VIDEO = // 'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd';
   "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8";
@@ -57,8 +55,6 @@ const App: React.FC = () => {
           />
         </ErrorBoundary>
       </div>
-      <DeviceCapabilitiesAccordion/>
-      <StreamDetailsAccordion videoURL={videoSrc} drmType={drmType} licenseUrl={licenseUrl} />
       <VideoURLInput defaultURL={SAMPLE_VIDEO} onLoad={handleLoadVideo} />
     </div>
   );

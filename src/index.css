@@ -15,7 +15,6 @@ code {
   font-family: "Courier New", monospace;
 }
 
-/* 🎬 Dashboard Layout */
 .dashBoard {
   display: flex;
   flex-direction: row;
@@ -86,8 +85,8 @@ h4 {
 .video-url-input {
   background-color: white;
   padding: 16px;
+  margin: auto 25px;
   border-radius: 8px;
-  width: 97%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -193,7 +192,6 @@ h4 {
 .accordion {
   background-color: white;
   border-radius: 8px;
-  margin: 12px 0;
   width: 97%;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -219,4 +217,12 @@ h4 {
   padding: 12px;
   border-top: 1px solid #ddd;
   font-size: 14px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  margin-bottom: 6px;
 }

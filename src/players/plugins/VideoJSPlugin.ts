@@ -37,8 +37,18 @@ export class VideoJSPlugin implements IPlayer {
     this.player.on("error", () =>
       this.emitEvent("error", this.player?.error())
     );
-    // this.player.on('resolutionchange', () => this.emitEvent('renditionchange'));
-    this.player.on("loadedmetadata", () => this.trackRenditionChange());
+
+    this.player.on("loadedmetadata", () => {
+      console.log("Metadata loaded - Fetching renditions...");
+      this.getAvailableRenditions();
+      this.trackRenditionChange();
+    });
+
+    this.player.on("loadeddata", () => {
+      console.log("New source loaded - Updating renditions...");
+      this.getAvailableRenditions();
+    });
+
     this.trackRenditionChange();
   }
   trackRenditionChange() {
@@ -99,6 +109,49 @@ export class VideoJSPlugin implements IPlayer {
         [drmConfig.drmType]: { serverURL: drmConfig.licenseUrl },
       });
     }
+  }
+
+  getAvailableRenditions(): { resolution: string; bitrate: number }[] {
+    if (!this.player || !this.player.qualityLevels) return [];
+
+    return Array.from(
+      this.player.qualityLevels().levels_ as {
+        width: number;
+        height: number;
+        bitrate: number;
+      }[]
+    )
+      .map((level) => ({
+        resolution: `${level.width}x${level.height}`,
+        bitrate: Math.round(level.bitrate / 1000),
+      }))
+      .sort((a, b) => a.bitrate - b.bitrate);
+  }
+
+  setRendition(resolution: string): void {
+    if (!this.player || !this.player.qualityLevels) return;
+
+    const qualityLevels = this.player.qualityLevels();
+
+    qualityLevels.levels_.forEach(
+      (level: { width: number; height: number; enabled: boolean }) => {
+        level.enabled = `${level.width}x${level.height}` === resolution;
+      }
+    );
+
+    this.setAdaptiveBitrate(false);
+    console.log(`Switched to ${resolution}`);
+  }
+
+  setAdaptiveBitrate(enable: boolean): void {
+    if (!this.player || !this.player.qualityLevels) return;
+
+    const qualityLevels = this.player.qualityLevels();
+    qualityLevels.levels_.forEach(
+      (level: { enabled: boolean }) => (level.enabled = enable)
+    );
+
+    console.log(`ABR ${enable ? "enabled" : "disabled"}`);
   }
 
   play(): void {
