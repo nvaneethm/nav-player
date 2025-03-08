@@ -15,7 +15,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <h1>React ABR Video Player</h1>
+      <h1>Nav ABR Video Player</h1>
 
       <div>
         <label htmlFor="player-select">🎥 Select Player: </label>
