@@ -26,29 +26,30 @@ export class VideoJSPlugin implements IPlayer {
     this.player.on('error', () => this.emitEvent('error', this.player?.error()));
     // this.player.on('resolutionchange', () => this.emitEvent('renditionchange'));
     this.player.on('loadedmetadata', () => this.trackRenditionChange());
-
+    this.trackRenditionChange()
   }
 
   trackRenditionChange() {
     if (!this.player) return;
-  
+
     const updateQoE = () => {
       this.emitEvent('renditionchange', {
         bitrate: this.getBitrate(),
         resolution: this.getResolution(),
       });
     };
-  
-    // HLS Variant
+
+    // **Detect quality level changes in HLS**
     if (this.player.tech_?.hls) {
       this.player.tech_.hls.on('mediachange', updateQoE);
     }
-  
-    // DASH Variant
+
+    // **Detect quality level changes in DASH**
     if (this.player.tech_?.vhs) {
       this.player.tech_.vhs.on('mediachange', updateQoE);
     }
   }
+
 
   load(src: string): void {
     if (this.player && this.videoElement) {

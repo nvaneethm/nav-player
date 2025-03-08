@@ -1,57 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { IPlayer } from '../players/IPlayer';
+import usePlayerMetrics from '../hooks/usePlayerMetrics';
 
 interface PlayerMetricsProps {
   playerInstance: IPlayer | null;
 }
 
 const PlayerMetrics: React.FC<PlayerMetricsProps> = ({ playerInstance }) => {
-    const [metrics, setMetrics] = useState({
-      buffering: false,
-      currentBitrate: 0,
-      resolution: 'N/A',
-      renditionSwitches: 0,
-      events: [] as string[],
-    });
-  
-    useEffect(() => {
-      if (!playerInstance) return;
-  
-      const updateMetrics = () => {
-        setMetrics((prev) => ({
-          ...prev,
-          currentBitrate: playerInstance.getBitrate?.() || prev.currentBitrate,
-          resolution: playerInstance.getResolution?.() || prev.resolution,
-        }));
-      };
-  
-      const handleEvent = (event: string) => {
-        setMetrics((prev) => ({
-          ...prev,
-          events: [`[${new Date().toLocaleTimeString()}] ${event}`, ...prev.events].slice(0, 5),
-        }));
-      };
-  
-      playerInstance.on?.('buffering', () => setMetrics(prev => ({ ...prev, buffering: true })));
-      playerInstance.on?.('playing', () => setMetrics(prev => ({ ...prev, buffering: false })));
-      playerInstance.on?.('renditionchange', () => {
-        handleEvent('Rendition Changed');
-        setMetrics((prev) => ({
-          ...prev,
-          renditionSwitches: prev.renditionSwitches + 1,
-        }));
-        updateMetrics();
-      });
-  
-      updateMetrics();
-  
-      return () => {
-        playerInstance.off?.('buffering', () => {});
-        playerInstance.off?.('playing', () => {});
-        playerInstance.off?.('renditionchange', () => {});
-      };
-    }, [playerInstance]);
-  
+    
+  const metrics = usePlayerMetrics(playerInstance);
+
 
   return (
     <div className={"qoeContainer"}>

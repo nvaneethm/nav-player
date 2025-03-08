@@ -53,7 +53,7 @@ export class HLSPlayerPlugin implements IPlayer {
 
   // QoE Metrics
   getBitrate(): number {
-    return this.hls?.levels?.[this.hls.currentLevel]?.bitrate || 0;
+    return Math.round((this.hls?.levels?.[this.hls.currentLevel]?.bitrate || 0) / 1000) ;
   }
 
   getResolution(): string {
