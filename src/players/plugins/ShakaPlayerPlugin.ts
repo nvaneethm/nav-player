@@ -55,10 +55,14 @@ export class ShakaPlayerPlugin implements IPlayer {
     if (!this.player) return;
 
     if (drmConfig) {
+      const drmServer =
+        drmConfig.drmType === "widevine"
+          ? "com.widevine.alpha"
+          : "com.microsoft.playready";
       this.player.configure({
         drm: {
           servers: {
-            [drmConfig.drmType]: drmConfig.licenseUrl,
+            [drmServer]: drmConfig.licenseUrl,
           },
         },
       });
