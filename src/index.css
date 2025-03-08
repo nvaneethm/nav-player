@@ -5,6 +5,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -ms-overflow-style: none; 
+  scrollbar-width: none;
+}
+::-webkit-scrollbar { 
+  display: none; 
 }
 
 code {
@@ -78,9 +83,9 @@ h3 {
   background-color: #f9f9f9;
   padding: 16px;
   border-radius: 8px;
-  width: 100%;
+  /* width: 100%; */
   /* max-width: 600px; */
-  /* margin: 16px auto; */
+  margin: 16px auto;
   box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
 }
 
@@ -179,4 +184,32 @@ h3 {
 
 .error-modal button:hover {
   background-color: #cc000066;
+}
+.accordion {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin: 12px 0;
+  width: 97%;
+  padding: 20px;
+  /* max-width: 600px; */
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+.accordion-header {
+  background-color: #f9f9f9;
+  padding: 12px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  outline: none;
+}
+
+
+
+.accordion-content {
+  padding: 12px;
+  border-top: 1px solid #444;
+  font-size: 14px;
 }
