@@ -1,20 +1,30 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.dashBoard {
+  display: flex;
+  padding: 0px 20px;
+  flex-direction: row;
+  max-width: 100%;
+  justify-content: center;
+}
+
 .videoContainer {
-  width: 640px; /* Fixed width */
-  height: 360px; /* Fixed height */
+  width: 640px;
+  height: 360px;
   position: relative;
+  flex-grow: 1;
   background-color: black; /* Ensure visibility */
   overflow: hidden;
 }
@@ -25,12 +35,12 @@ video {
 }
 
 .qoeContainer {
-  margin-top: 20px;
+  flex-grow: 1;
   padding: 15px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  height: 328px;
   background-color: #f9f9f9;
-  max-width: 400px;
+  max-width: 800px;
   font-family: Arial, sans-serif;
 }
 
@@ -46,7 +56,7 @@ h3 {
 }
 
 .events {
-  max-height: 100px;
+  height: 105px;
   overflow-y: auto;
   padding: 5px;
   font-size: 12px;

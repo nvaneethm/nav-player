@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import PluginManager from '../players/PluginManager';
-import { IPlayer } from '../players/IPlayer';
-import PlayerMetrics from './PlayerMatrix'; // Import the new component
+import React, { useEffect, useRef, useState } from "react";
+import PluginManager from "../players/PluginManager";
+import { IPlayer } from "../players/IPlayer";
+import PlayerMetrics from "./PlayerMatrix"; // Import the new component
 
 interface VideoPlayerProps {
   src: string;
@@ -34,10 +34,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, pluginName }) => {
   }, [pluginName, src]);
 
   return (
-    <div>
+    <>
       <div ref={playerContainerRef} className={"videoContainer"} />
       {playerInstance && <PlayerMetrics playerInstance={playerInstance} />}
-    </div>
+    </>
   );
 };
 
