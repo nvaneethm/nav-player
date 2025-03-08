@@ -24,7 +24,30 @@ export class VideoJSPlugin implements IPlayer {
     this.player.on('playing', () => this.emitEvent('playing'));
     this.player.on('waiting', () => this.emitEvent('buffering'));
     this.player.on('error', () => this.emitEvent('error', this.player?.error()));
-    this.player.on('resolutionchange', () => this.emitEvent('renditionchange'));
+    // this.player.on('resolutionchange', () => this.emitEvent('renditionchange'));
+    this.player.on('loadedmetadata', () => this.trackRenditionChange());
+
+  }
+
+  trackRenditionChange() {
+    if (!this.player) return;
+  
+    const updateQoE = () => {
+      this.emitEvent('renditionchange', {
+        bitrate: this.getBitrate(),
+        resolution: this.getResolution(),
+      });
+    };
+  
+    // HLS Variant
+    if (this.player.tech_?.hls) {
+      this.player.tech_.hls.on('mediachange', updateQoE);
+    }
+  
+    // DASH Variant
+    if (this.player.tech_?.vhs) {
+      this.player.tech_.vhs.on('mediachange', updateQoE);
+    }
   }
 
   load(src: string): void {
@@ -72,7 +95,21 @@ export class VideoJSPlugin implements IPlayer {
   }
 
   getBitrate(): number {
-    return this.player?.videoTracks?.[0]?.bitrate || 0;
+    if (!this.player) return 0;
+  
+    // HLS Source
+    if (this.player.tech_?.hls) {
+      const media = this.player.tech_.hls.playlists.media();
+      return media?.attributes?.BANDWIDTH ? Math.round(media.attributes.BANDWIDTH / 1000) : 0; // Convert to Kbps
+    }
+  
+    // DASH Source
+    if (this.player.tech_?.vhs?.playlists) {
+      const activePlaylist = this.player.tech_.vhs.playlists.media();
+      return activePlaylist?.attributes?.BANDWIDTH ? Math.round(activePlaylist.attributes.BANDWIDTH / 1000) : 0; // Convert to Kbps
+    }
+  
+    return 0;
   }
 
   getResolution(): string {

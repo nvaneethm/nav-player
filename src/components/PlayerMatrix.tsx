@@ -6,64 +6,52 @@ interface PlayerMetricsProps {
 }
 
 const PlayerMetrics: React.FC<PlayerMetricsProps> = ({ playerInstance }) => {
-  const [metrics, setMetrics] = useState({
-    buffering: false,
-    currentBitrate: 0,
-    resolution: 'N/A',
-    renditionSwitches: 0,
-    events: [] as string[],
-  });
-
-  useEffect(() => {
-    if (!playerInstance) return;
-
-    const updateMetrics = () => {
-      setMetrics((prev) => ({
-        ...prev,
-        currentBitrate: playerInstance.getBitrate?.() || prev.currentBitrate,
-        resolution: playerInstance.getResolution?.() || prev.resolution,
-      }));
-    };
-
-    const handleEvent = (event: string) => {
-      setMetrics((prev) => ({
-        ...prev,
-        events: [`[${new Date().toLocaleTimeString()}] ${event}`, ...prev.events].slice(0, 5),
-      }));
-    };
-
-    playerInstance.on?.('buffering', () => {
-      handleEvent('Buffering...');
-      setMetrics((prev) => ({ ...prev, buffering: true }));
+    const [metrics, setMetrics] = useState({
+      buffering: false,
+      currentBitrate: 0,
+      resolution: 'N/A',
+      renditionSwitches: 0,
+      events: [] as string[],
     });
-
-    playerInstance.on?.('playing', () => {
-      handleEvent('Playing...');
-      setMetrics((prev) => ({ ...prev, buffering: false }));
-    });
-
-    playerInstance.on?.('renditionchange', () => {
-      handleEvent('Rendition Changed');
-      setMetrics((prev) => ({
-        ...prev,
-        renditionSwitches: prev.renditionSwitches + 1,
-      }));
+  
+    useEffect(() => {
+      if (!playerInstance) return;
+  
+      const updateMetrics = () => {
+        setMetrics((prev) => ({
+          ...prev,
+          currentBitrate: playerInstance.getBitrate?.() || prev.currentBitrate,
+          resolution: playerInstance.getResolution?.() || prev.resolution,
+        }));
+      };
+  
+      const handleEvent = (event: string) => {
+        setMetrics((prev) => ({
+          ...prev,
+          events: [`[${new Date().toLocaleTimeString()}] ${event}`, ...prev.events].slice(0, 5),
+        }));
+      };
+  
+      playerInstance.on?.('buffering', () => setMetrics(prev => ({ ...prev, buffering: true })));
+      playerInstance.on?.('playing', () => setMetrics(prev => ({ ...prev, buffering: false })));
+      playerInstance.on?.('renditionchange', () => {
+        handleEvent('Rendition Changed');
+        setMetrics((prev) => ({
+          ...prev,
+          renditionSwitches: prev.renditionSwitches + 1,
+        }));
+        updateMetrics();
+      });
+  
       updateMetrics();
-    });
-
-    playerInstance.on?.('error', (error) => {
-      handleEvent(`Error: ${error}`);
-    });
-
-    updateMetrics(); // Fetch initial data
-
-    return () => {
-      playerInstance.off?.('buffering', () => {});
-      playerInstance.off?.('playing', () => {});
-      playerInstance.off?.('renditionchange', () => {});
-      playerInstance.off?.('error', () => {});
-    };
-  }, [playerInstance]);
+  
+      return () => {
+        playerInstance.off?.('buffering', () => {});
+        playerInstance.off?.('playing', () => {});
+        playerInstance.off?.('renditionchange', () => {});
+      };
+    }, [playerInstance]);
+  
 
   return (
     <div className={"qoeContainer"}>
