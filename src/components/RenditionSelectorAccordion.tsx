@@ -13,6 +13,7 @@ const RenditionSelectorAccordion: React.FC<RenditionSelectorAccordionProps> = ({
     { resolution: string; bitrate: number }[]
   >([]);
   const [selectedRendition, setSelectedRendition] = useState<string>("ABR");
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   useEffect(() => {
     if (!playerInstance) return;
@@ -21,8 +22,10 @@ const RenditionSelectorAccordion: React.FC<RenditionSelectorAccordionProps> = ({
     const fetchRenditions = () => {
       const availableRenditions =
         playerInstance.getAvailableRenditions?.() || [];
-      setRenditions(availableRenditions);
-      console.log("Available Renditions:", availableRenditions);
+      if (availableRenditions.length > 0) {
+        setRenditions(availableRenditions);
+        setForceUpdate((prev) => prev + 1);
+      }
     };
 
     fetchRenditions(); // Fetch initially
@@ -65,7 +68,7 @@ const RenditionSelectorAccordion: React.FC<RenditionSelectorAccordionProps> = ({
           </label>
           {renditions.map((rendition, index) => (
             <label
-              key={`${rendition.resolution}-${index}`}
+              key={`${rendition.resolution}-${index}-${forceUpdate}`}
               className="radio-label"
             >
               <input
