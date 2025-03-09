@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import VideoPlayer from "./components/VideoPlayer";
 import VideoURLInput from "./components/VideoURLInput"; // Import the new component
 import PluginManager from "./players/PluginManager";
-import { SHAKA_PLAYER, VIDEO_JS } from "./players/PlayerFactory";
+import { VIDEO_JS } from "./players/PlayerFactory";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PlayerSelectorAccordion from "./components/PlayerSelectorAccordion";
 

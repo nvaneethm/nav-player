@@ -69,6 +69,7 @@ const usePlayerMetrics = (playerInstance: IPlayer | null) => {
       playerInstance.off?.('renditionchange', () => {});
       clearInterval(interval); // Clean up interval
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerInstance]);
 
   return metrics;
