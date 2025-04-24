@@ -6,8 +6,8 @@ import { VIDEO_JS } from "./players/PlayerFactory";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PlayerSelectorAccordion from "./components/PlayerSelectorAccordion";
 
-const SAMPLE_VIDEO = // 'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd';
-  "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8";
+const SAMPLE_VIDEO = 'https://bitmovin-a.akamaihd.net/content/sintel/sintel.mpd';
+  // "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8";
 
 const App: React.FC = () => {
   const [selectedPlugin, setSelectedPlugin] = useState<string>(VIDEO_JS);
